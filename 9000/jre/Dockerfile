@@ -1,8 +1,8 @@
 FROM alpine:3.2
 
 ENV JAVA_VERSION=8 \
-    JAVA_UPDATE=45 \
-    JAVA_BUILD=14 \
+    JAVA_UPDATE=60 \
+    JAVA_BUILD=27 \
     JAVA_PACKAGE=server-jre \
     JAVA_HOME=/usr/lib/jvm/default-jvm \
     JRUBY_VERSION=9.0.1.0
