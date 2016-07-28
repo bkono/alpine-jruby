@@ -1,23 +1,23 @@
-FROM alpine:3.2
+FROM alpine:latest
 
 ENV JAVA_VERSION=8 \
-    JAVA_UPDATE=60 \
-    JAVA_BUILD=27 \
+    JAVA_UPDATE=101 \
+    JAVA_BUILD=13 \
     JAVA_PACKAGE=server-jre \
     JAVA_HOME=/usr/lib/jvm/default-jvm \
-    JRUBY_VERSION=9.0.1.0
+    JRUBY_VERSION=9.1.2.0
 
 
 # Here we use several hacks collected from https://github.com/gliderlabs/docker-alpine/issues/11:
 # 1. install GLibc (which is not the cleanest solution at all)
 # 2. hotfix /etc/nsswitch.conf, which is apperently required by glibc and is not used in Alpine Linux
 
-RUN apk add --update bash wget ca-certificates && \
+RUN apk update && apk add bash wget ca-certificates && \
+    update-ca-certificates && \
+    wget -q -O /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub && \
     cd /tmp && \
-    wget "https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-2.21-r2.apk" \
-         "https://circle-artifacts.com/gh/andyshinn/alpine-pkg-glibc/6/artifacts/0/home/ubuntu/alpine-pkg-glibc/packages/x86_64/glibc-bin-2.21-r2.apk" && \
-    apk add --allow-untrusted glibc-2.21-r2.apk glibc-bin-2.21-r2.apk && \
-    /usr/glibc/usr/bin/ldconfig /lib /usr/glibc/usr/lib && \
+    wget https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r3/glibc-2.23-r3.apk && \
+    apk add glibc-2.23-r3.apk && \
     echo 'hosts: files mdns4_minimal [NOTFOUND=return] dns mdns4' >> /etc/nsswitch.conf && \
     wget --header "Cookie: oraclelicense=accept-securebackup-cookie;" \
         "http://download.oracle.com/otn-pub/java/jdk/${JAVA_VERSION}u${JAVA_UPDATE}-b${JAVA_BUILD}/${JAVA_PACKAGE}-${JAVA_VERSION}u${JAVA_UPDATE}-linux-x64.tar.gz" && \
